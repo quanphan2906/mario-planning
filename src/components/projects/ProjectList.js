@@ -2,7 +2,8 @@ import React from 'react'
 
 import ProjectSummary from "./ProjectSummary"
 
-function ProjectList({ projects }) {
+function ProjectList(props) {
+    const {projects} = props;
     return (
         <div className="project-list section">
             {projects && projects.map(project => {

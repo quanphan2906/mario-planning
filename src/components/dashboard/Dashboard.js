@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { connnect, connect } from "react-redux"
+import { Redirect } from "react-router-dom"
 
 import Notifications from "./Notifications"
 import ProjectList from "../projects/ProjectList"
 
-class Dashboard extends Component {
+export default class Dashboard extends Component {
     render() {
-        // console.log(this.props);
-        const { projects } = this.props;
+        const { projects, user } = this.props;
+        if (!user) return <Redirect to="/signin" />
         return (
             <div>
                 <div className="dashboard container">
@@ -24,11 +24,3 @@ class Dashboard extends Component {
         )
     }
 }
-
-const mapStateToProps = (state) => {
-    return {
-        projects: state.project.projects
-    }
-}
-
-export default connect(mapStateToProps)(Dashboard)

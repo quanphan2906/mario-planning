@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 
-export default class SignIn extends Component {
+import services from "../../services"
+
+class SignIn extends Component {
     constructor(props){
         super(props);
         this.state = {
@@ -13,10 +15,12 @@ export default class SignIn extends Component {
             [e.target.id]: e.target.value,
         })
     }
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
         
-        console.log(this.state)
+        await services.login(this.state.email, this.state.password);
+        services.trackUser(this.props.trackUser);
+        this.props.history.push("/");
     }
     render() {
         return (
@@ -39,3 +43,5 @@ export default class SignIn extends Component {
         )
     }
 }
+
+export default SignIn
