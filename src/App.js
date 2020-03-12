@@ -14,15 +14,9 @@ class App extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			projects: [],
 			user: null,
 			authReady: false,
 		}
-	}
-	syncData = (docs) => {
-		this.setState({
-			projects: docs
-		})
 	}
 	trackUser = (user) => {
 		this.setState({
@@ -31,29 +25,27 @@ class App extends Component {
 		})
 	}
 	componentDidMount() {
-		services.syncWithFirebase("projects", this.syncData);
 		services.trackUser(this.trackUser);
 	}
 	render() {
-		const { projects, user } = this.state;
+		const { user } = this.state;
 		return this.state.authReady ? (
 			<BrowserRouter>  
 			<div className="App">
-				<Navbar user={user} trackUser={this.trackUser}/>
+				<Navbar user={user} trackUser={this.trackUser} />
 				<Switch>
 					<Route 
 						exact 
 						path={["/", "/dashboard"]} 
 						render={(props) => <Dashboard 
-													{...props} 
-													projects={projects} 
+													{...props}
 													user={user}
 											/>
 								}
 					/>
 					<Route 
 						path="/project/:id"
-						render={(props) => <ProjectDetails {...props} projects={projects} user={user}/> }/>
+						render={(props) => <ProjectDetails {...props} user={user}/> }/>
 					<Route 
 						path="/signin" 
 						render={(props) => <SignIn {...props} trackUser={this.trackUser} user={user}/> }/>

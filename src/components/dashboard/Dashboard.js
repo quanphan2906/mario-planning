@@ -4,9 +4,26 @@ import { Redirect } from "react-router-dom"
 import Notifications from "./Notifications"
 import ProjectList from "../projects/ProjectList"
 
+import services from "../../services"
+
 export default class Dashboard extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            projects: [],
+        }
+    }
+    syncData = (docs) => {
+		this.setState({
+			projects: docs
+        })
+    }
+    componentDidMount() {
+        services.syncWithFirebase("projects", this.syncData, 3);
+    }
     render() {
-        const { projects, user } = this.props;
+        const { user } = this.props;
+        const { projects } = this.state;
         if (!user) return <Redirect to="/signin" />
         return (
             <div>

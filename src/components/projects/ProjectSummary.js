@@ -4,7 +4,12 @@ import { withRouter } from "react-router-dom"
 function ProjectSummary(props) {
     const { project } = props;
     const toProjectDetail = (e) => {
-        props.history.push("project/" + project.id)
+        props.history.push({
+            pathname: "project/" + project.id,
+            state: {
+                project
+            }
+        })
     }
     return (
         <div className="card z-depth-0 project-summary" onClick={toProjectDetail}>

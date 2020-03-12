@@ -53,6 +53,18 @@ const renderAll = async (collectionName) => {
     return data;
 }
 
+const renderWithLimit = async (collectionName, limit) => {
+    const db = firebase.firestore();
+    const snapshot = await db.collection(collectionName).limit(limit).get();
+    const data = snapshot.docs.map(doc => {
+        return {
+            id: doc.id,
+            ...doc.data()
+        }
+    })
+    return data;
+}
+
 const render = async (collectionName, id) => {
     const db = firebase.firestore();
     const doc = await db.collection(collectionName).doc(id).get();
@@ -67,8 +79,8 @@ const trackUser = (trackUserFunc) => {
         if (user) {
             const userStore = await render("users", user.uid);
             const userObj = {
-                uid: user.uid,
-                ...userStore
+                ...userStore,
+                id: user.uid,
             }
             trackUserFunc(userObj);
         } else {
@@ -77,17 +89,36 @@ const trackUser = (trackUserFunc) => {
     })
 }
 
-const syncWithFirebase = async (collectionName, synDataFunc) => {
+const syncWithFirebase = async (collectionName, synDataFunc, limit = null) => {
     const db = firebase.firestore();
-    db.collection(collectionName).onSnapshot(async snapshot => {
-        let docs = snapshot.docs.map(doc => {
-            return {
-                id: doc.id,
-                ...doc.data()
-            }
+    if (limit){
+        const unsubscribe = db.collection(collectionName)
+            .orderBy("createdAt", "desc")   
+            .limit(limit)
+            .onSnapshot(async snapshot => {
+            let docs = snapshot.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data()
+                }
+            })
+            synDataFunc(docs);
         })
-        synDataFunc(docs);
-    })
+        return unsubscribe;
+    } else {
+        const unsubscribe = db.collection(collectionName)
+            .orderBy("createdAt", "desc")   
+            .onSnapshot(async snapshot => {
+            let docs = snapshot.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data()
+                }
+            })
+            synDataFunc(docs);
+        })
+        return unsubscribe;
+    }
 }
 
 const create = async (collectionName, data) => {
@@ -102,6 +133,7 @@ export default {
     trackUser,
     syncWithFirebase,
     renderAll,
+    renderWithLimit,
     render,
     create
 }
