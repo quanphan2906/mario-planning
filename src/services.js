@@ -2,7 +2,38 @@ import firebase from "firebase"
 import "firebase/firestore"
 
 const login = async (email, password) => {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+    try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        return {
+            isSuccess: true
+        }
+    } catch (error) {
+        return {
+            isSuccess: false,
+            error: error.message
+        }
+    }
+}
+
+const signup = async (newUserObj) => {
+    const { email, password, firstName, lastName } = newUserObj;
+    try {
+        const res = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const db = firebase.firestore();
+        await db.collection("users").doc(res.user.uid).set({
+            firstName: firstName,
+            lastName: lastName,
+            initials: firstName[0] + lastName[0],
+        })
+        return {
+            isSuccess: true,
+        }
+    } catch (error) {
+        return {
+            isSuccess: false,
+            error: error.message,
+        }
+    }
 }
 
 const logout = async () => {
@@ -10,10 +41,36 @@ const logout = async () => {
     console.log("log out finished")
 }
 
+const renderAll = async (collectionName) => {
+    const db = firebase.firestore();
+    const snapshot = await db.collection(collectionName).get();
+    const data = snapshot.docs.map(doc => {
+        return {
+            id: doc.id,
+            ...doc.data()
+        }
+    })
+    return data;
+}
+
+const render = async (collectionName, id) => {
+    const db = firebase.firestore();
+    const doc = await db.collection(collectionName).doc(id).get();
+    return {
+        id: doc.id,
+        ...doc.data(),
+    };
+}
+
 const trackUser = (trackUserFunc) => {
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(async user => {
         if (user) {
-            trackUserFunc(user);
+            const userStore = await render("users", user.uid);
+            const userObj = {
+                uid: user.uid,
+                ...userStore
+            }
+            trackUserFunc(userObj);
         } else {
             trackUserFunc(null);
         }
@@ -33,24 +90,6 @@ const syncWithFirebase = async (collectionName, synDataFunc) => {
     })
 }
 
-const renderAll = async (collectionName) => {
-    const db = firebase.firestore();
-    const snapshot = await db.collection(collectionName).get();
-    const data = snapshot.docs.map(doc => {
-        return {
-            id: doc.id,
-            ...doc.data()
-        }
-    })
-    return data;
-}
-
-const render = async (collectionName, id) => {
-    const db = firebase.firestore();
-    const doc = await db.collection(collectionName).doc(id).get();
-    console.log(doc);
-}
-
 const create = async (collectionName, data) => {
     const db = firebase.firestore();
     await db.collection(collectionName).add(data);
@@ -58,6 +97,7 @@ const create = async (collectionName, data) => {
 
 export default {
     login,
+    signup,
     logout,
     trackUser,
     syncWithFirebase,

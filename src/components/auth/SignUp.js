@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom';
+
+import services from "../../services"
 
 export default class SignUp extends Component {
     constructor(props){
@@ -8,19 +11,25 @@ export default class SignUp extends Component {
             password: "",
             firstName: "",
             lastName: "",
+            error: "",
         }
     }
     handleChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value,
+            error: "",
         })
     }
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
         
-        console.log(this.state)
+        const res = await services.signup(this.state);
+        if (!res.isSuccess) this.setState({
+            error: res.error
+        })
     }
     render() {
+        if (this.props.user) return <Redirect to="/" />
         return (
             <div className="container">
                 <form onSubmit={this.handleSubmit} className="white">
@@ -44,6 +53,7 @@ export default class SignUp extends Component {
                     <div className="input-field">
                         <button className="btn pink lighten-1 z-depth-0">Signup</button>
                     </div>
+                    <div className="red-text center"> {this.state.error} </div>
                 </form>
             </div>
         )

@@ -38,14 +38,14 @@ export default class CreateProject extends Component {
             let newProjectObj = {
                 title,
                 content,
-                authorFirstName: "Net",
-                authorLastName: "Ninja",
-                authorId: "12345",
+                authorFirstName: this.props.user.firstName,
+                authorLastName: this.props.user.lastName,
+                authorId: this.props.user.uid,
                 createdAt: new Date(),
             }
 
-            services.create("projects", newProjectObj);
-            
+            services.create("projects", newProjectObj);     
+            this.props.history.push("/")
         } else {
             this.setState({
                 errors

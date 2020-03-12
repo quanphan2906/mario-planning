@@ -1,6 +1,9 @@
 import React from 'react'
+import { Redirect } from "react-router-dom"
 
 function ProjectDetails(props) {
+    if (!props.user) return <Redirect to="/signin"/>
+
     const id = props.match.params.id;
     const { projects } = props;
     const project = projects.find((item) => {
@@ -14,8 +17,8 @@ function ProjectDetails(props) {
                     <p>{project.content}</p>
                 </div>
                 <div className="card-action grey lighten-4 gret-text">
-                    <div>Posted by the Net Ninja</div>
-                    <div>3rd September</div>
+                    <div>Posted by the {project.authorFirstName + " " + project.authorLastName} </div>
+                    <div>Created at {project.createdAt.toDate().toString().slice(4, 16)}</div>
                 </div>
             </div>
 

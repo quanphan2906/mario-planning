@@ -35,11 +35,11 @@ class App extends Component {
 		services.trackUser(this.trackUser);
 	}
 	render() {
-		const { projects } = this.state;
+		const { projects, user } = this.state;
 		return this.state.authReady ? (
 			<BrowserRouter>  
 			<div className="App">
-				<Navbar user={this.state.user} trackUser={this.trackUser}/>
+				<Navbar user={user} trackUser={this.trackUser}/>
 				<Switch>
 					<Route 
 						exact 
@@ -47,20 +47,22 @@ class App extends Component {
 						render={(props) => <Dashboard 
 													{...props} 
 													projects={projects} 
-													user={this.state.user}
+													user={user}
 											/>
 								}
 					/>
 					<Route 
 						path="/project/:id"
-						render={(props) => <ProjectDetails {...props} projects={projects}/>} />
+						render={(props) => <ProjectDetails {...props} projects={projects} user={user}/> }/>
 					<Route 
 						path="/signin" 
-						render={(props) => <SignIn {...props} trackUser={this.trackUser} />}/>
-					<Route path="/signup" component={SignUp}/>
+						render={(props) => <SignIn {...props} trackUser={this.trackUser} user={user}/> }/>
+					<Route 
+						path="/signup" 
+						render={(props) => <SignUp {...props} user={user} /> }/>
 					<Route 
 						path="/create" 
-						render={(props) => <CreateProject {...props} user={this.state.user} />}/>
+						render={(props) => <CreateProject {...props} user={user} />}/>
 				</Switch>
 			</div>
 			</BrowserRouter>

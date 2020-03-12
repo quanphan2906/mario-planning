@@ -10,8 +10,8 @@ function ProjectSummary(props) {
         <div className="card z-depth-0 project-summary" onClick={toProjectDetail}>
             <div className="card-content grey-text text-darken-3">
                 <span className="card-title text-darken-3">{project.title}</span>
-                <p>Posted by the Net Ninja</p>
-                <p className="grey-text">3rd September</p>
+                <p>Posted by the {project.authorFirstName + " " + project.authorLastName} </p>
+                <p className="grey-text"> Created at {project.createdAt.toDate().toString().slice(4, 16)} </p>
             </div>
         </div>
     )

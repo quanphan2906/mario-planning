@@ -10,7 +10,7 @@ const Navbar = ({ user, trackUser }) => {
             <div className="container">
                 <Link to="/" className="brand-logo">MarioPlan</Link>
                 { user ? (
-                    <SignedInLinks trackUser={trackUser}/>
+                    <SignedInLinks trackUser={trackUser} user={user}/>
                 ) : (
                     <SignedOutLinks />
                 )}
