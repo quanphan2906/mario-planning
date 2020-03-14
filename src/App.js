@@ -7,6 +7,8 @@ import ProjectDetails from "./components/projects/ProjectDetails"
 import SignIn from "./components/auth/SignIn"
 import SignUp from "./components/auth/SignUp"
 import CreateProject from "./components/projects/CreateProject"
+import SignedInLinks from "./components/layout/SignedInLinks"
+import SignedOutLinks from "./components/layout/SignedOutLinks"
 
 import services from "./services"
 
@@ -32,7 +34,13 @@ class App extends Component {
 		return this.state.authReady ? (
 			<BrowserRouter>  
 			<div className="App">
-				<Navbar user={user} trackUser={this.trackUser} />
+				<Navbar>
+					{ user ? (
+						<SignedInLinks trackUser={this.trackUser} user={user}/>
+					) : (
+						<SignedOutLinks />
+					)}
+				</Navbar>
 				<Switch>
 					<Route 
 						exact 
